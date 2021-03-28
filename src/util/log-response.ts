@@ -1,7 +1,7 @@
 import { ILogResponseOptions } from "../typing";
 
 export const logResponse = ({ logger, name, time, response }: ILogResponseOptions): void => {
-  logger.info(`${name} Responded`, {
+  logger.info(`${name || "Axios"} Response`, {
     config: {
       auth: response?.config?.auth,
       host: response?.request?.host,

@@ -1,7 +1,7 @@
 import { ILogErrorOptions } from "../typing";
 
 export const logError = ({ logger, name, time, error }: ILogErrorOptions): void => {
-  logger.error(`${name} Responded with Error`, {
+  logger.error(`${name || "Axios"} Response with Error`, {
     config: {
       auth: error?.config?.auth,
       host: error?.request?.host,
