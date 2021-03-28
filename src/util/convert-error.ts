@@ -7,6 +7,7 @@ export const convertError = (error: AxiosError): AxiosRequestError => {
 
   return new AxiosRequestError(message, {
     config: {
+      auth: error?.config?.auth,
       host: error?.request?.host,
       method: error?.request?.method,
       path: error?.request?.path,

@@ -1,12 +1,27 @@
-import { IAxiosError } from "../typing";
-import { Logger } from "@lindorm-io/winston";
+import { ILogErrorOptions } from "../typing";
 
-interface ILogErrorOptions {
-  logger: Logger;
-  name: string;
-  error: IAxiosError;
-}
-
-export const logError = ({ logger, name, error }: ILogErrorOptions): void => {
-  logger.error(`${name} Responded with Error`, error);
+export const logError = ({ logger, name, time, error }: ILogErrorOptions): void => {
+  logger.error(`${name} Responded with Error`, {
+    config: {
+      auth: error?.config?.auth,
+      host: error?.request?.host,
+      method: error?.request?.method,
+      path: error?.request?.path,
+      protocol: error?.request?.protocol,
+      timeout: error?.config?.timeout,
+      url: error?.config?.url,
+    },
+    request: {
+      data: error?.config?.data,
+      headers: error?.config?.headers,
+      params: error?.config?.params,
+    },
+    response: {
+      data: error?.response?.data || {},
+      headers: error?.response?.headers || {},
+      status: error?.response?.status,
+      statusText: error?.response?.statusText,
+    },
+    time,
+  });
 };

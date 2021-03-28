@@ -3,6 +3,7 @@ import { IAxiosConfig, IAxiosError, IAxiosMiddleware, IAxiosRequest, IAxiosRespo
 import { Logger } from "@lindorm-io/winston";
 import { axiosRequestSnakeKeysMiddleware, axiosResponseCamelKeysMiddleware } from "../middleware";
 import { convertError, convertResponse, logError, logResponse } from "../util";
+import { getResponseTime } from "../util/get-response-time";
 
 interface IAxiosOptions {
   baseUrl?: string;
@@ -99,6 +100,8 @@ export class Axios {
   }
 
   private async request(config: IAxiosConfig, request: IAxiosRequest): Promise<IAxiosResponse> {
+    const start = Date.now();
+
     const finalConfig = {
       ...this.config(),
       ...config,
@@ -114,13 +117,17 @@ export class Axios {
     try {
       const response = await axios.request(axiosRequestConfig);
 
-      logResponse({ logger: this.logger, name: this.name, response });
+      const time = getResponseTime(response?.headers, start);
+
+      logResponse({ logger: this.logger, name: this.name, time, response });
+
       return await this.responseMiddlware(convertResponse(response));
     } catch (err) {
-      const convertedError = convertError(err);
+      const time = getResponseTime(err?.response?.headers, start);
 
-      logError({ logger: this.logger, name: this.name, error: convertedError });
-      throw await this.errorMiddlware(convertedError);
+      logError({ logger: this.logger, name: this.name, time, error: err });
+
+      throw await this.errorMiddlware(convertError(err));
     }
   }
 }

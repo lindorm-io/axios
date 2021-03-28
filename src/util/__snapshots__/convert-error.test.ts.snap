@@ -4,6 +4,7 @@ exports[`convertError should resolve a more limited AxiosRequestError 1`] = `[Ax
 
 exports[`convertError should resolve a more limited AxiosRequestError 2`] = `
 Object {
+  "auth": undefined,
   "host": "host",
   "method": "method",
   "path": "path",

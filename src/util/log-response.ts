@@ -1,13 +1,6 @@
-import { AxiosResponse } from "axios";
-import { Logger } from "@lindorm-io/winston";
+import { ILogResponseOptions } from "../typing";
 
-interface ILogResponseOptions {
-  logger: Logger;
-  name: string;
-  response: AxiosResponse;
-}
-
-export const logResponse = ({ logger, name, response }: ILogResponseOptions): void => {
+export const logResponse = ({ logger, name, time, response }: ILogResponseOptions): void => {
   logger.info(`${name} Responded`, {
     config: {
       auth: response?.config?.auth,
@@ -29,5 +22,6 @@ export const logResponse = ({ logger, name, response }: ILogResponseOptions): vo
       status: response?.status,
       statusText: response?.statusText,
     },
+    time,
   });
 };
