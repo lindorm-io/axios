@@ -5,7 +5,7 @@ import { axiosRequestSnakeKeysMiddleware, axiosResponseCamelKeysMiddleware } fro
 import { convertError, convertResponse, logError, logResponse } from "../util";
 import { getResponseTime } from "../util/get-response-time";
 
-interface IAxiosOptions {
+export interface IAxiosOptions {
   baseUrl?: string;
   basicAuth?: AxiosBasicCredentials;
   bearerAuth?: string;
