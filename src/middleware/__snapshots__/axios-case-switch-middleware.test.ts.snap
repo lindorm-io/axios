@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`axiosRequestSnakeKeysMiddleware should convert all data keys to snake_case 1`] = `
+Object {
+  "data": Object {
+    "camel_case_1": 1,
+    "camel_case_2": 2,
+    "camel_case_3": Object {
+      "camel_case_4": 4,
+    },
+  },
+  "headers": Object {
+    "headers": true,
+  },
+  "params": Object {
+    "params": true,
+  },
+}
+`;
+
+exports[`axiosResponseCamelKeysMiddleware should convert all data keys to camelCase 1`] = `
+Object {
+  "data": Object {
+    "snakeCase1": 1,
+    "snakeCase2": 2,
+    "snakeCase3": Object {
+      "snakeCase4": 4,
+    },
+  },
+  "headers": Object {},
+  "status": 200,
+  "statusText": "OK",
+}
+`;
