@@ -1,6 +1,6 @@
-import { IAxiosRequest } from "../typing";
+import { IAxiosMiddleware, IAxiosRequest } from "../typing";
 
-export const axiosBearerAuthMiddleware = (bearerToken: string) => ({
+export const axiosBearerAuthMiddleware = (bearerToken: string): IAxiosMiddleware => ({
   request: async (request: IAxiosRequest): Promise<IAxiosRequest> => ({
     ...request,
     headers: {
