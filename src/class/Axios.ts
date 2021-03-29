@@ -1,8 +1,8 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { AuthType } from "../enum";
 import { Logger } from "@lindorm-io/winston";
 import { axiosCaseSwitchMiddleware } from "../middleware";
-import { convertError, convertResponse, logError, logResponse } from "../util";
+import { convertError, convertResponse, logAxiosError, logAxiosResponse } from "../util";
 import { getResponseTime } from "../util/get-response-time";
 import {
   IAxiosError,
@@ -68,13 +68,13 @@ export class Axios {
   private getAuth(options: IAxiosRequestOptions) {
     switch (options.auth) {
       case AuthType.BASIC:
-        return { auth: this.auth.basic };
+        return { auth: this.auth.basic, headers: {} };
 
       case AuthType.BEARER:
         return { headers: { Authorization: `Bearer ${this.auth.bearer}` } };
 
       default:
-        return {};
+        return { headers: {} };
     }
   }
 
@@ -123,29 +123,34 @@ export class Axios {
     const request = await this.requestMiddleware(
       {
         data: options.data,
-        headers: options.headers,
+        headers: options.headers || {},
         params: options.params,
       },
       options,
     );
+    const auth = this.getAuth(options);
+
+    let response: AxiosResponse;
 
     try {
-      const response = await axios.request({
-        ...this.getAuth(options),
+      response = await axios.request({
         ...config,
+        ...(auth.auth ? { auth: auth.auth } : {}),
         ...request,
+        headers: {
+          ...auth.headers,
+          ...request.headers,
+        },
       });
 
-      logResponse({
+      logAxiosResponse({
         logger: this.logger,
         name: this.name,
         time: getResponseTime(response?.headers, start),
         response,
       });
-
-      return await this.responseMiddlware(convertResponse(response), options);
     } catch (err) {
-      logError({
+      logAxiosError({
         logger: this.logger,
         name: this.name,
         time: getResponseTime(err?.response?.headers, start),
@@ -154,5 +159,7 @@ export class Axios {
 
       throw await this.errorMiddlware(convertError(err), options);
     }
+
+    return await this.responseMiddlware(convertResponse(response), options);
   }
 }

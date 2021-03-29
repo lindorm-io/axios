@@ -1,4 +1,4 @@
 export * from "./convert-error";
 export * from "./convert-response";
-export * from "./log-error";
-export * from "./log-response";
+export * from "./log-axios-error";
+export * from "./log-axios-response";

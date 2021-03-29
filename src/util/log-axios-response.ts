@@ -1,6 +1,6 @@
 import { ILogResponseOptions } from "../typing";
 
-export const logResponse = ({ logger, name, time, response }: ILogResponseOptions): void => {
+export const logAxiosResponse = ({ logger, name, time, response }: ILogResponseOptions): void => {
   logger.info(`${name || "Axios"} Response`, {
     config: {
       auth: response?.config?.auth,

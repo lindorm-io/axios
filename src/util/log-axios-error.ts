@@ -1,6 +1,6 @@
 import { ILogErrorOptions } from "../typing";
 
-export const logError = ({ logger, name, time, error }: ILogErrorOptions): void => {
+export const logAxiosError = ({ logger, name, time, error }: ILogErrorOptions): void => {
   logger.error(`${name || "Axios"} Response with Error`, {
     config: {
       auth: error?.config?.auth,

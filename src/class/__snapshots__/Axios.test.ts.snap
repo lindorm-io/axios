@@ -14,7 +14,7 @@ Array [
   Array [
     Object {
       "data": undefined,
-      "headers": undefined,
+      "headers": Object {},
       "method": "delete",
       "params": undefined,
       "url": "http://localhost/delete/path",
@@ -37,7 +37,7 @@ Array [
   Array [
     Object {
       "data": undefined,
-      "headers": undefined,
+      "headers": Object {},
       "method": "get",
       "params": Object {
         "param1": true,
@@ -64,7 +64,7 @@ Array [
       "data": Object {
         "data": true,
       },
-      "headers": undefined,
+      "headers": Object {},
       "method": "patch",
       "params": undefined,
       "url": "http://localhost/patch/path",
@@ -89,7 +89,7 @@ Array [
       "data": Object {
         "data": true,
       },
-      "headers": undefined,
+      "headers": Object {},
       "method": "post",
       "params": undefined,
       "url": "http://localhost/post/path",
@@ -114,7 +114,7 @@ Array [
       "data": Object {
         "data": true,
       },
-      "headers": undefined,
+      "headers": Object {},
       "method": "put",
       "params": undefined,
       "url": "http://localhost/put/path",
@@ -123,7 +123,7 @@ Array [
 ]
 `;
 
-exports[`Axios should use and prioritize bearer auth 1`] = `
+exports[`Axios should not use base url 1`] = `
 Object {
   "data": Object {},
   "headers": Object {},
@@ -132,12 +132,12 @@ Object {
 }
 `;
 
-exports[`Axios should use and prioritize bearer auth 2`] = `
+exports[`Axios should not use base url 2`] = `
 Array [
   Array [
     Object {
       "data": undefined,
-      "headers": undefined,
+      "headers": Object {},
       "method": "get",
       "params": undefined,
       "url": "http://localhost/get/path",
@@ -146,7 +146,7 @@ Array [
 ]
 `;
 
-exports[`Axios should use base url 1`] = `
+exports[`Axios should overwrite bearer auth if specified in headers or middleware 1`] = `
 Object {
   "data": Object {},
   "headers": Object {},
@@ -155,12 +155,14 @@ Object {
 }
 `;
 
-exports[`Axios should use base url 2`] = `
+exports[`Axios should overwrite bearer auth if specified in headers or middleware 2`] = `
 Array [
   Array [
     Object {
       "data": undefined,
-      "headers": undefined,
+      "headers": Object {
+        "Authorization": "custom",
+      },
       "method": "get",
       "params": undefined,
       "url": "http://localhost/get/path",
@@ -182,8 +184,37 @@ exports[`Axios should use basic auth 2`] = `
 Array [
   Array [
     Object {
+      "auth": Object {
+        "password": "password",
+        "username": "username",
+      },
       "data": undefined,
-      "headers": undefined,
+      "headers": Object {},
+      "method": "get",
+      "params": undefined,
+      "url": "http://localhost/get/path",
+    },
+  ],
+]
+`;
+
+exports[`Axios should use bearer auth 1`] = `
+Object {
+  "data": Object {},
+  "headers": Object {},
+  "status": undefined,
+  "statusText": undefined,
+}
+`;
+
+exports[`Axios should use bearer auth 2`] = `
+Array [
+  Array [
+    Object {
+      "data": undefined,
+      "headers": Object {
+        "Authorization": "Bearer bearerAuth",
+      },
       "method": "get",
       "params": undefined,
       "url": "http://localhost/get/path",
