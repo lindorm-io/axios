@@ -14,8 +14,9 @@ Array [
   Array [
     Object {
       "data": undefined,
-      "headers": Object {},
+      "headers": undefined,
       "method": "delete",
+      "params": undefined,
       "url": "http://localhost/delete/path",
     },
   ],
@@ -36,7 +37,7 @@ Array [
   Array [
     Object {
       "data": undefined,
-      "headers": Object {},
+      "headers": undefined,
       "method": "get",
       "params": Object {
         "param1": true,
@@ -63,8 +64,9 @@ Array [
       "data": Object {
         "data": true,
       },
-      "headers": Object {},
+      "headers": undefined,
       "method": "patch",
+      "params": undefined,
       "url": "http://localhost/patch/path",
     },
   ],
@@ -87,8 +89,9 @@ Array [
       "data": Object {
         "data": true,
       },
-      "headers": Object {},
+      "headers": undefined,
       "method": "post",
+      "params": undefined,
       "url": "http://localhost/post/path",
     },
   ],
@@ -111,8 +114,9 @@ Array [
       "data": Object {
         "data": true,
       },
-      "headers": Object {},
+      "headers": undefined,
       "method": "put",
+      "params": undefined,
       "url": "http://localhost/put/path",
     },
   ],
@@ -133,10 +137,9 @@ Array [
   Array [
     Object {
       "data": undefined,
-      "headers": Object {
-        "Authorization": "Bearer bearerAuth",
-      },
+      "headers": undefined,
       "method": "get",
+      "params": undefined,
       "url": "http://localhost/get/path",
     },
   ],
@@ -157,8 +160,9 @@ Array [
   Array [
     Object {
       "data": undefined,
-      "headers": Object {},
+      "headers": undefined,
       "method": "get",
+      "params": undefined,
       "url": "http://localhost/get/path",
     },
   ],
@@ -178,13 +182,10 @@ exports[`Axios should use basic auth 2`] = `
 Array [
   Array [
     Object {
-      "auth": Object {
-        "password": "password",
-        "username": "username",
-      },
       "data": undefined,
-      "headers": Object {},
+      "headers": undefined,
       "method": "get",
+      "params": undefined,
       "url": "http://localhost/get/path",
     },
   ],

@@ -1,9 +1,9 @@
-import { axiosRequestSnakeKeysMiddleware, axiosResponseCamelKeysMiddleware } from "./axios-case-switch-middleware";
+import { axiosCaseSwitchMiddleware } from "./axios-case-switch-middleware";
 
-describe("axiosRequestSnakeKeysMiddleware", () => {
+describe("axiosCaseSwitchMiddleware", () => {
   test("should convert all data keys to snake_case", () => {
     expect(
-      axiosRequestSnakeKeysMiddleware.request({
+      axiosCaseSwitchMiddleware.request({
         data: {
           camelCase1: 1,
           camelCase2: 2,
@@ -14,12 +14,10 @@ describe("axiosRequestSnakeKeysMiddleware", () => {
       }),
     ).resolves.toMatchSnapshot();
   });
-});
 
-describe("axiosResponseCamelKeysMiddleware", () => {
   test("should convert all data keys to camelCase", () => {
     expect(
-      axiosResponseCamelKeysMiddleware.response({
+      axiosCaseSwitchMiddleware.response({
         data: {
           snake_case_1: 1,
           snake_case_2: 2,

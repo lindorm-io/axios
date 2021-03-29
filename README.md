@@ -18,38 +18,72 @@ Creates a wrapper around the axios package that makes it somewhat easier to perf
 ```typescript
 const axios = new Axios({
   baseUrl: "https://lindorm.io",
-  basicAuth: { username: "secret", password: "secret" },
-  bearerAuth: "jwt.jwt.jwt",
+  auth: {
+    basic: { username: "secret", password: "secret" },
+    bearer: "jwt.jwt.jwt",
+  },
   logger: winston,
   middleware: [],
   name: "Client Name",
 });
 
-const response = await axios.get("/path", { params: { param_1: "value" }});
-const response = await axios.post("/path", { data: 1 });
-const response = await axios.put("/path", { data: 1 });
-const response = await axios.patch("/path", { data: 1 });
-const response = await axios.delete("/path");
+const response = await axios.get("/path", {
+  params: { param_1: "value" },
+});
+
+const response = await axios.post("/path", {
+  data: { key: "value" },
+});
+
+const response = await axios.put("/path", {
+  data: { key: "value" },
+});
+
+const response = await axios.patch("/path", {
+  data: { key: "value" },
+});
+
+const response = await axios.delete("/path", {
+  headers: { "X-Extra-Header": "value" },
+});
 ```
 
 ### Middleware
 With middleware you are able to add handlers that enhance or validate your request/response/error before the Promise is resolved.
 
+Middleware can be added to the constructor config, and it can be added as part of any request options.
+
 ```typescript
-const middleware = {
-  request: (request: IAxiosRequest): IAxiosRequest => {
+const yourMiddleware = {
+  request: async (request: IAxiosRequest): Promise<IAxiosRequest> => {
     // enhance request
     return request
   },
-  response: (response: IAxiosResponse): IAxiosResponse => {
+  response: async (response: IAxiosResponse): Promise<IAxiosResponse> => {
     // enhance response
     return response
   },
-  error: (error: IAxiosError): IAxiosError => {
+  error: async (error: IAxiosError): Promise<IAxiosError> => {
     // enhance error
     return error
   },
 }
+
+const axios = new Axios({ middleware: [yourMiddleware] })
+
+const response = await axios.put("/path", {
+  middleware: [yourMiddleware]
+})
+```
+
+### Auth
+Auth can be added as part of the constructor config, but it will not be used unless explicitly told to, since not all paths require auth - or the same auth. When you wish to use your configured auth, you can enable it from the request options object.
+
+```typescript
+const response = await axios.post("/path", { 
+  auth: AuthType.BEARER,
+  data: { key: "value" }
+})
 ```
 
 ### Case Switching

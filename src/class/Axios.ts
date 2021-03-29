@@ -1,133 +1,158 @@
-import axios, { AxiosBasicCredentials, AxiosRequestConfig } from "axios";
-import { IAxiosConfig, IAxiosError, IAxiosMiddleware, IAxiosRequest, IAxiosResponse } from "../typing";
+import axios from "axios";
+import { AuthType } from "../enum";
 import { Logger } from "@lindorm-io/winston";
-import { axiosRequestSnakeKeysMiddleware, axiosResponseCamelKeysMiddleware } from "../middleware";
+import { axiosCaseSwitchMiddleware } from "../middleware";
 import { convertError, convertResponse, logError, logResponse } from "../util";
 import { getResponseTime } from "../util/get-response-time";
-
-export interface IAxiosOptions {
-  baseUrl?: string;
-  basicAuth?: AxiosBasicCredentials;
-  bearerAuth?: string;
-  logger: Logger;
-  middleware?: Array<IAxiosMiddleware>;
-  name?: string;
-}
+import {
+  IAxiosError,
+  IAxiosMiddleware,
+  IAxiosOptions,
+  IAxiosOptionsAuth,
+  IAxiosRequest,
+  IAxiosRequestConfig,
+  IAxiosRequestOptions,
+  IAxiosResponse,
+} from "../typing";
 
 export class Axios {
+  private auth: IAxiosOptionsAuth;
   private baseUrl: string;
-  private basicAuth: AxiosBasicCredentials | null;
-  private bearerAuth: string;
   private logger: Logger;
   private middleware: Array<IAxiosMiddleware>;
   private name: string;
 
   constructor(options: IAxiosOptions) {
+    this.auth = options.auth || null;
     this.baseUrl = options.baseUrl || null;
-    this.basicAuth = options.basicAuth || null;
-    this.bearerAuth = options.bearerAuth || null;
     this.logger = options.logger.createChildLogger("Axios");
-    this.middleware = [
-      axiosResponseCamelKeysMiddleware,
-      ...(options.middleware || []),
-      axiosRequestSnakeKeysMiddleware,
-    ];
+    this.middleware = options.middleware || [];
     this.name = options.name || null;
   }
 
-  public async get(path: string, options?: IAxiosRequest): Promise<IAxiosResponse> {
-    return this.request({ method: "get", url: this.url(path) } as IAxiosConfig, options || {});
+  public async get(path: string, options?: IAxiosRequestOptions): Promise<IAxiosResponse> {
+    return this.request({ method: "get", url: this.getUrl(path) }, options || {});
   }
 
-  public async post(path: string, data?: Record<string, unknown>, options?: IAxiosRequest): Promise<IAxiosResponse> {
-    return this.request({ method: "post", url: this.url(path) } as IAxiosConfig, {
-      data: data || {},
-      ...(options || {}),
-    });
+  public async post(path: string, options?: IAxiosRequestOptions): Promise<IAxiosResponse> {
+    return this.request(
+      { method: "post", url: this.getUrl(path) },
+      {
+        ...(options || {}),
+      },
+    );
   }
 
-  public async put(path: string, data?: Record<string, unknown>, options?: IAxiosRequest): Promise<IAxiosResponse> {
-    return this.request({ method: "put", url: this.url(path) } as IAxiosConfig, {
-      data: data || {},
-      ...(options || {}),
-    });
+  public async put(path: string, options?: IAxiosRequestOptions): Promise<IAxiosResponse> {
+    return this.request(
+      { method: "put", url: this.getUrl(path) },
+      {
+        ...(options || {}),
+      },
+    );
   }
 
-  public async patch(path: string, data?: Record<string, unknown>, options?: IAxiosRequest): Promise<IAxiosResponse> {
-    return this.request({ method: "patch", url: this.url(path) } as IAxiosConfig, {
-      data: data || {},
-      ...(options || {}),
-    });
+  public async patch(path: string, options?: IAxiosRequestOptions): Promise<IAxiosResponse> {
+    return this.request(
+      { method: "patch", url: this.getUrl(path) },
+      {
+        ...(options || {}),
+      },
+    );
   }
 
-  public async delete(path: string, options?: IAxiosRequest): Promise<IAxiosResponse> {
-    return this.request({ method: "delete", url: this.url(path) } as IAxiosConfig, options || {});
+  public async delete(path: string, options?: IAxiosRequestOptions): Promise<IAxiosResponse> {
+    return this.request({ method: "delete", url: this.getUrl(path) }, options || {});
   }
 
-  private config() {
-    if (this.bearerAuth) return { headers: { Authorization: `Bearer ${this.bearerAuth}` } };
-    if (this.basicAuth) return { headers: {}, auth: this.basicAuth };
-    return { headers: {} };
+  private getAuth(options: IAxiosRequestOptions) {
+    switch (options.auth) {
+      case AuthType.BASIC:
+        return { auth: this.auth.basic };
+
+      case AuthType.BEARER:
+        return { headers: { Authorization: `Bearer ${this.auth.bearer}` } };
+
+      default:
+        return {};
+    }
   }
 
-  private url(path: string): string {
+  private getUrl(path: string): string {
     if (!this.baseUrl) return path;
+
     return new URL(path, this.baseUrl).toString();
   }
 
-  private async requestMiddleware(request: IAxiosRequest): Promise<IAxiosRequest> {
-    for (const mw of this.middleware) {
+  private async requestMiddleware(request: IAxiosRequest, options: IAxiosRequestOptions): Promise<IAxiosRequest> {
+    const middleware = [...this.middleware, ...(options.middleware || []), axiosCaseSwitchMiddleware];
+
+    for (const mw of middleware) {
       if (!mw.request) continue;
       request = await mw.request(request);
     }
+
     return request;
   }
 
-  private async responseMiddlware(response: IAxiosResponse): Promise<IAxiosResponse> {
-    for (const mw of this.middleware) {
+  private async responseMiddlware(response: IAxiosResponse, options: IAxiosRequestOptions): Promise<IAxiosResponse> {
+    const middleware = [axiosCaseSwitchMiddleware, ...this.middleware, ...(options.middleware || [])];
+
+    for (const mw of middleware) {
       if (!mw.response) continue;
       response = await mw.response(response);
     }
+
     return response;
   }
 
-  private async errorMiddlware(error: IAxiosError): Promise<IAxiosError> {
-    for (const mw of this.middleware) {
+  private async errorMiddlware(error: IAxiosError, options: IAxiosRequestOptions): Promise<IAxiosError> {
+    const middleware = [...this.middleware, ...(options.middleware || [])];
+
+    for (const mw of middleware) {
       if (!mw.error) continue;
       error = await mw.error(error);
     }
+
     return error;
   }
 
-  private async request(config: IAxiosConfig, request: IAxiosRequest): Promise<IAxiosResponse> {
+  private async request(config: IAxiosRequestConfig, options: IAxiosRequestOptions): Promise<IAxiosResponse> {
     const start = Date.now();
 
-    const finalConfig = {
-      ...this.config(),
-      ...config,
-    };
-
-    const finalRequest = await this.requestMiddleware(request);
-
-    const axiosRequestConfig = {
-      ...finalConfig,
-      ...finalRequest,
-    } as AxiosRequestConfig;
+    const request = await this.requestMiddleware(
+      {
+        data: options.data,
+        headers: options.headers,
+        params: options.params,
+      },
+      options,
+    );
 
     try {
-      const response = await axios.request(axiosRequestConfig);
+      const response = await axios.request({
+        ...this.getAuth(options),
+        ...config,
+        ...request,
+      });
 
-      const time = getResponseTime(response?.headers, start);
+      logResponse({
+        logger: this.logger,
+        name: this.name,
+        time: getResponseTime(response?.headers, start),
+        response,
+      });
 
-      logResponse({ logger: this.logger, name: this.name, time, response });
-
-      return await this.responseMiddlware(convertResponse(response));
+      return await this.responseMiddlware(convertResponse(response), options);
     } catch (err) {
-      const time = getResponseTime(err?.response?.headers, start);
+      logError({
+        logger: this.logger,
+        name: this.name,
+        time: getResponseTime(err?.response?.headers, start),
+        error: err,
+      });
 
-      logError({ logger: this.logger, name: this.name, time, error: err });
-
-      throw await this.errorMiddlware(convertError(err));
+      throw await this.errorMiddlware(convertError(err), options);
     }
   }
 }

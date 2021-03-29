@@ -1,15 +1,12 @@
 import { IAxiosRequest, IAxiosResponse } from "../typing";
 import { camelKeys, snakeKeys } from "@lindorm-io/core";
 
-export const axiosRequestSnakeKeysMiddleware = {
-  request: async (request: IAxiosRequest) => ({
+export const axiosCaseSwitchMiddleware = {
+  request: async (request: IAxiosRequest): Promise<IAxiosRequest> => ({
     ...request,
     data: snakeKeys(request.data),
   }),
-};
-
-export const axiosResponseCamelKeysMiddleware = {
-  response: async (response: IAxiosResponse) => ({
+  response: async (response: IAxiosResponse): Promise<IAxiosResponse> => ({
     ...response,
     data: camelKeys(response.data),
   }),

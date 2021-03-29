@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`axiosBearerAuthMiddleware should convert all data keys to snake_case 1`] = `
+Object {
+  "data": Object {
+    "data": true,
+  },
+  "headers": Object {
+    "Authorization": "Bearer jwt.jwt.jwt",
+    "headers": true,
+  },
+  "params": Object {
+    "params": true,
+  },
+}
+`;

@@ -24,19 +24,19 @@ describe("Axios", () => {
   });
 
   test("should POST", async () => {
-    await expect(handler.post("http://localhost/post/path", { data: true })).resolves.toMatchSnapshot();
+    await expect(handler.post("http://localhost/post/path", { data: { data: true } })).resolves.toMatchSnapshot();
     // @ts-ignore
     expect(axios.request.mock.calls).toMatchSnapshot();
   });
 
   test("should PUT", async () => {
-    await expect(handler.put("http://localhost/put/path", { data: true })).resolves.toMatchSnapshot();
+    await expect(handler.put("http://localhost/put/path", { data: { data: true } })).resolves.toMatchSnapshot();
     // @ts-ignore
     expect(axios.request.mock.calls).toMatchSnapshot();
   });
 
   test("should PATCH", async () => {
-    await expect(handler.patch("http://localhost/patch/path", { data: true })).resolves.toMatchSnapshot();
+    await expect(handler.patch("http://localhost/patch/path", { data: { data: true } })).resolves.toMatchSnapshot();
     // @ts-ignore
     expect(axios.request.mock.calls).toMatchSnapshot();
   });
