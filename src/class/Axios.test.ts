@@ -73,11 +73,17 @@ describe("Axios", () => {
   });
 
   test("should not use base url", async () => {
+    await expect(handler.get("http://without-base-url/path")).resolves.toMatchSnapshot();
+    // @ts-ignore
+    expect(axios.request.mock.calls).toMatchSnapshot();
+  });
+
+  test("should not use base url when specified", async () => {
     handler = new Axios({
       // @ts-ignore
       logger,
     });
-    await expect(handler.get("http://localhost/get/path")).resolves.toMatchSnapshot();
+    await expect(handler.get("http://without-base-url/path")).resolves.toMatchSnapshot();
     // @ts-ignore
     expect(axios.request.mock.calls).toMatchSnapshot();
   });

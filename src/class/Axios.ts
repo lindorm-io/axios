@@ -4,6 +4,7 @@ import { Logger } from "@lindorm-io/winston";
 import { axiosCaseSwitchMiddleware } from "../middleware";
 import { convertError, convertResponse, logAxiosError, logAxiosResponse } from "../util";
 import { getResponseTime } from "../util/get-response-time";
+import { startsWith } from "lodash";
 import {
   IAxiosError,
   IAxiosMiddleware,
@@ -80,6 +81,7 @@ export class Axios {
 
   private getUrl(path: string): string {
     if (!this.baseUrl) return path;
+    if (startsWith(path, "http")) return path;
 
     return new URL(path, this.baseUrl).toString();
   }

@@ -140,7 +140,30 @@ Array [
       "headers": Object {},
       "method": "get",
       "params": undefined,
-      "url": "http://localhost/get/path",
+      "url": "http://without-base-url/path",
+    },
+  ],
+]
+`;
+
+exports[`Axios should not use base url when specified 1`] = `
+Object {
+  "data": Object {},
+  "headers": Object {},
+  "status": undefined,
+  "statusText": undefined,
+}
+`;
+
+exports[`Axios should not use base url when specified 2`] = `
+Array [
+  Array [
+    Object {
+      "data": undefined,
+      "headers": Object {},
+      "method": "get",
+      "params": undefined,
+      "url": "http://without-base-url/path",
     },
   ],
 ]
