@@ -15,7 +15,6 @@ describe("Axios", () => {
         bearer: "bearerAuth",
       },
       baseUrl: "http://localhost",
-      // @ts-ignore
       logger,
     });
   });

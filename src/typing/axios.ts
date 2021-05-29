@@ -22,19 +22,19 @@ export interface IAxiosConfig {
   method: Method;
   path: string;
   protocol: string;
-  timeout: number;
-  url: string;
+  timeout?: number;
+  url?: string;
 }
 
 export interface IAxiosError {
-  config: IAxiosConfig;
+  config?: IAxiosConfig;
   debug?: Record<string, any>;
   details?: string;
   errorCode?: string;
   publicData?: Record<string, any>;
-  request: IAxiosRequest;
-  response: IAxiosResponse;
-  statusCode: number;
+  request?: IAxiosRequest;
+  response?: IAxiosResponse;
+  statusCode?: number;
   title?: string;
 }
 
@@ -47,8 +47,8 @@ export interface IAxiosRequest {
 export interface IAxiosResponse {
   data?: Record<string, unknown>;
   headers: Record<string, unknown>;
-  status: number;
-  statusText: string;
+  status?: number;
+  statusText?: string;
 }
 
 export interface IAxiosRequestConfig {
@@ -59,4 +59,11 @@ export interface IAxiosRequestConfig {
 export interface IAxiosRequestOptions extends IAxiosRequest {
   auth?: AuthType;
   middleware?: Array<IAxiosMiddleware>;
+}
+
+export interface IAxiosGetAuthData {
+  auth?: AxiosBasicCredentials;
+  headers?: {
+    Authorization?: string;
+  };
 }

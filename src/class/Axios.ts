@@ -7,6 +7,7 @@ import { getResponseTime } from "../util/get-response-time";
 import { startsWith } from "lodash";
 import {
   IAxiosError,
+  IAxiosGetAuthData,
   IAxiosMiddleware,
   IAxiosOptions,
   IAxiosOptionsAuth,
@@ -17,13 +18,13 @@ import {
 } from "../typing";
 
 export class Axios {
-  private auth: IAxiosOptionsAuth;
-  private baseUrl: string;
-  private logger: Logger;
-  private middleware: Array<IAxiosMiddleware>;
-  private name: string;
+  private readonly auth: IAxiosOptionsAuth | null;
+  private readonly baseUrl: string | null;
+  private readonly logger: Logger;
+  private readonly middleware: Array<IAxiosMiddleware>;
+  private readonly name: string | null;
 
-  constructor(options: IAxiosOptions) {
+  public constructor(options: IAxiosOptions) {
     this.auth = options.auth || null;
     this.baseUrl = options.baseUrl || null;
     this.logger = options.logger.createChildLogger("Axios");
@@ -66,13 +67,13 @@ export class Axios {
     return this.request({ method: "delete", url: this.getUrl(path) }, options || {});
   }
 
-  private getAuth(options: IAxiosRequestOptions) {
+  private getAuth(options: IAxiosRequestOptions): IAxiosGetAuthData {
     switch (options.auth) {
       case AuthType.BASIC:
-        return { auth: this.auth.basic, headers: {} };
+        return { auth: this.auth?.basic, headers: {} };
 
       case AuthType.BEARER:
-        return { headers: { Authorization: `Bearer ${this.auth.bearer}` } };
+        return { headers: { Authorization: `Bearer ${this.auth?.bearer}` } };
 
       default:
         return { headers: {} };

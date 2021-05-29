@@ -1,6 +1,6 @@
 import { IGetResponseTimeData } from "../typing";
 
-const getHeaderTime = (headers: Record<string, any>): number => {
+const getHeaderTime = (headers: Record<string, any>): number | undefined => {
   try {
     const header = headers["x-response-time"];
     return parseInt(header.replace("ms", ""), 10);

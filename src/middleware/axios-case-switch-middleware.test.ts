@@ -1,9 +1,15 @@
 import { axiosCaseSwitchMiddleware } from "./axios-case-switch-middleware";
 
 describe("axiosCaseSwitchMiddleware", () => {
+  let middleware: any;
+
+  beforeEach(() => {
+    middleware = axiosCaseSwitchMiddleware;
+  });
+
   test("should convert all data keys to snake_case", () => {
     expect(
-      axiosCaseSwitchMiddleware.request({
+      middleware.request({
         data: {
           camelCase1: 1,
           camelCase2: 2,
@@ -17,7 +23,7 @@ describe("axiosCaseSwitchMiddleware", () => {
 
   test("should convert all data keys to camelCase", () => {
     expect(
-      axiosCaseSwitchMiddleware.response({
+      middleware.response({
         data: {
           snake_case_1: 1,
           snake_case_2: 2,

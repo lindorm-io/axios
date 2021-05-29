@@ -3,13 +3,13 @@ import { Logger } from "@lindorm-io/winston";
 
 export interface IGetResponseTimeData {
   axios: number;
-  server: number;
-  diff: number;
+  server: number | undefined;
+  diff: number | undefined;
 }
 
 export interface ILogOptions {
   logger: Logger;
-  name: string;
+  name: string | null;
   time: IGetResponseTimeData;
 }
 

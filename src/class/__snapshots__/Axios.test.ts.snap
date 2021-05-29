@@ -13,7 +13,7 @@ exports[`Axios should DELETE 2`] = `
 Array [
   Array [
     Object {
-      "data": undefined,
+      "data": Object {},
       "headers": Object {},
       "method": "delete",
       "params": undefined,
@@ -36,7 +36,7 @@ exports[`Axios should GET 2`] = `
 Array [
   Array [
     Object {
-      "data": undefined,
+      "data": Object {},
       "headers": Object {},
       "method": "get",
       "params": Object {
@@ -136,7 +136,7 @@ exports[`Axios should not use base url 2`] = `
 Array [
   Array [
     Object {
-      "data": undefined,
+      "data": Object {},
       "headers": Object {},
       "method": "get",
       "params": undefined,
@@ -159,7 +159,7 @@ exports[`Axios should not use base url when specified 2`] = `
 Array [
   Array [
     Object {
-      "data": undefined,
+      "data": Object {},
       "headers": Object {},
       "method": "get",
       "params": undefined,
@@ -182,7 +182,7 @@ exports[`Axios should overwrite bearer auth if specified in headers or middlewar
 Array [
   Array [
     Object {
-      "data": undefined,
+      "data": Object {},
       "headers": Object {
         "Authorization": "custom",
       },
@@ -211,7 +211,7 @@ Array [
         "password": "password",
         "username": "username",
       },
-      "data": undefined,
+      "data": Object {},
       "headers": Object {},
       "method": "get",
       "params": undefined,
@@ -234,7 +234,7 @@ exports[`Axios should use bearer auth 2`] = `
 Array [
   Array [
     Object {
-      "data": undefined,
+      "data": Object {},
       "headers": Object {
         "Authorization": "Bearer bearerAuth",
       },
