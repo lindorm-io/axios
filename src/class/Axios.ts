@@ -7,13 +7,14 @@ import { startsWith } from "lodash";
 import {
   AxiosError,
   AxiosMiddleware,
+  AxiosOptions,
   AxiosRequest,
   AxiosResponse,
-  AxiosOptions,
   RequestConfig,
   RequestOptions,
   Unknown,
 } from "../typing";
+import { AuthType } from "../enum";
 
 export class Axios {
   private readonly baseUrl: string | null;
@@ -120,7 +121,7 @@ export class Axios {
   private async request<Data>(config: RequestConfig, options: RequestOptions): Promise<AxiosResponse<Data>> {
     const start = Date.now();
 
-    const conf = await this.configMiddleware(config, options);
+    const { auth, ...conf } = await this.configMiddleware(config, options);
     const request = await this.requestMiddleware(
       {
         data: options.data,
@@ -129,15 +130,18 @@ export class Axios {
       },
       options,
     );
+    const { Authorization, ...headers } = request.headers || {};
 
     let response: Response;
 
     try {
       response = await axios.request({
+        ...(options.auth === AuthType.BASIC ? { auth } : {}),
         ...conf,
         ...request,
         headers: {
-          ...request.headers,
+          ...(options.auth === AuthType.BEARER ? { Authorization } : {}),
+          ...(headers ? headers : {}),
         },
       });
 

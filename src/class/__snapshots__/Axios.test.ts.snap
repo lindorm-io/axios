@@ -21,9 +21,7 @@ Array [
       "data": undefined,
       "headers": Object {},
       "method": "get",
-      "params": Object {
-        "param1": true,
-      },
+      "params": undefined,
       "url": "http://localhost/get/path",
     },
   ],
@@ -34,9 +32,7 @@ exports[`Axios should PATCH 1`] = `
 Array [
   Array [
     Object {
-      "data": Object {
-        "data": true,
-      },
+      "data": undefined,
       "headers": Object {},
       "method": "patch",
       "params": undefined,
@@ -50,9 +46,7 @@ exports[`Axios should POST 1`] = `
 Array [
   Array [
     Object {
-      "data": Object {
-        "data": true,
-      },
+      "data": undefined,
       "headers": Object {},
       "method": "post",
       "params": undefined,
@@ -66,9 +60,7 @@ exports[`Axios should PUT 1`] = `
 Array [
   Array [
     Object {
-      "data": Object {
-        "data": true,
-      },
+      "data": undefined,
       "headers": Object {},
       "method": "put",
       "params": undefined,
@@ -101,6 +93,88 @@ Array [
       "method": "get",
       "params": undefined,
       "url": "http://without-base-url/path",
+    },
+  ],
+]
+`;
+
+exports[`Axios should use basic auth when specified 1`] = `
+Array [
+  Array [
+    Object {
+      "auth": Object {
+        "password": "pass",
+        "username": "user",
+      },
+      "data": undefined,
+      "headers": Object {},
+      "method": "get",
+      "params": undefined,
+      "url": "http://localhost/get/path",
+    },
+  ],
+]
+`;
+
+exports[`Axios should use bearer auth when specified 1`] = `
+Array [
+  Array [
+    Object {
+      "data": undefined,
+      "headers": Object {
+        "Authorization": "Bearer jwt.jwt.jwt",
+      },
+      "method": "get",
+      "params": undefined,
+      "url": "http://localhost/get/path",
+    },
+  ],
+]
+`;
+
+exports[`Axios should use data as specified 1`] = `
+Array [
+  Array [
+    Object {
+      "data": Object {
+        "data_1": "value",
+      },
+      "headers": Object {},
+      "method": "get",
+      "params": undefined,
+      "url": "http://localhost/get/path",
+    },
+  ],
+]
+`;
+
+exports[`Axios should use headers as specified 1`] = `
+Array [
+  Array [
+    Object {
+      "data": undefined,
+      "headers": Object {
+        "X-Header": "Value",
+      },
+      "method": "get",
+      "params": undefined,
+      "url": "http://localhost/get/path",
+    },
+  ],
+]
+`;
+
+exports[`Axios should use params as specified 1`] = `
+Array [
+  Array [
+    Object {
+      "data": undefined,
+      "headers": Object {},
+      "method": "get",
+      "params": Object {
+        "param1": "value",
+      },
+      "url": "http://localhost/get/path",
     },
   ],
 ]

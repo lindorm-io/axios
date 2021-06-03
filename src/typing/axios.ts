@@ -2,6 +2,7 @@ import { AnyObject, Unknown } from "./util";
 import { AxiosBasicCredentials as BasicCredentials, Method } from "axios";
 import { AxiosMiddleware } from "./middleware";
 import { Logger } from "@lindorm-io/winston";
+import { AuthType } from "../enum";
 
 export interface AxiosOptions {
   baseUrl?: string;
@@ -52,5 +53,6 @@ export interface RequestConfig {
 }
 
 export interface RequestOptions extends AxiosRequest {
+  auth?: AuthType;
   middleware?: Array<AxiosMiddleware>;
 }

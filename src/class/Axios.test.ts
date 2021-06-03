@@ -1,6 +1,8 @@
 import axios from "axios";
 import { Axios } from "./Axios";
 import { logger } from "../test";
+import { AuthType } from "../enum";
+import { axiosBasicAuthMiddleware, axiosBearerAuthMiddleware } from "../middleware/public";
 
 jest.mock("axios");
 
@@ -20,33 +22,67 @@ describe("Axios", () => {
     handler = new Axios({
       baseUrl: "http://localhost",
       logger,
+      middleware: [
+        axiosBasicAuthMiddleware({ username: "user", password: "pass" }),
+        axiosBearerAuthMiddleware("jwt.jwt.jwt"),
+      ],
     });
   });
 
   afterEach(jest.clearAllMocks);
 
   test("should GET", async () => {
-    await expect(handler.get("/get/path", { params: { param1: true } })).resolves.toStrictEqual(mocked);
+    await expect(handler.get("/get/path")).resolves.toStrictEqual(mocked);
     expect(request.mock.calls).toMatchSnapshot();
   });
 
   test("should POST", async () => {
-    await expect(handler.post("/post/path", { data: { data: true } })).resolves.toStrictEqual(mocked);
+    await expect(handler.post("/post/path")).resolves.toStrictEqual(mocked);
     expect(request.mock.calls).toMatchSnapshot();
   });
 
   test("should PUT", async () => {
-    await expect(handler.put("/put/path", { data: { data: true } })).resolves.toStrictEqual(mocked);
+    await expect(handler.put("/put/path")).resolves.toStrictEqual(mocked);
     expect(request.mock.calls).toMatchSnapshot();
   });
 
   test("should PATCH", async () => {
-    await expect(handler.patch("/patch/path", { data: { data: true } })).resolves.toStrictEqual(mocked);
+    await expect(handler.patch("/patch/path")).resolves.toStrictEqual(mocked);
     expect(request.mock.calls).toMatchSnapshot();
   });
 
   test("should DELETE", async () => {
     await expect(handler.delete("/delete/path")).resolves.toStrictEqual(mocked);
+    expect(request.mock.calls).toMatchSnapshot();
+  });
+
+  test("should use basic auth when specified", async () => {
+    await expect(
+      handler.get("/get/path", {
+        auth: AuthType.BASIC,
+        middleware: [axiosBasicAuthMiddleware({ username: "user", password: "pass" })],
+      }),
+    ).resolves.toStrictEqual(mocked);
+    expect(request.mock.calls).toMatchSnapshot();
+  });
+
+  test("should use bearer auth when specified", async () => {
+    await expect(handler.get("/get/path", { auth: AuthType.BEARER })).resolves.toStrictEqual(mocked);
+    expect(request.mock.calls).toMatchSnapshot();
+  });
+
+  test("should use data as specified", async () => {
+    await expect(handler.get("/get/path", { data: { data1: "value" } })).resolves.toStrictEqual(mocked);
+    expect(request.mock.calls).toMatchSnapshot();
+  });
+
+  test("should use headers as specified", async () => {
+    await expect(handler.get("/get/path", { headers: { "X-Header": "Value" } })).resolves.toStrictEqual(mocked);
+    expect(request.mock.calls).toMatchSnapshot();
+  });
+
+  test("should use params as specified", async () => {
+    await expect(handler.get("/get/path", { params: { param1: "value" } })).resolves.toStrictEqual(mocked);
     expect(request.mock.calls).toMatchSnapshot();
   });
 
