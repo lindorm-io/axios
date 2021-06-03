@@ -1,43 +1,39 @@
-import axios, { AxiosResponse } from "axios";
-import { AuthType } from "../enum";
+import axios, { AxiosResponse as Response } from "axios";
 import { Logger } from "@lindorm-io/winston";
-import { axiosCaseSwitchMiddleware } from "../middleware";
+import { axiosCaseSwitchMiddleware } from "../middleware/default";
 import { convertError, convertResponse, logAxiosError, logAxiosResponse } from "../util";
 import { getResponseTime } from "../util/get-response-time";
 import { startsWith } from "lodash";
 import {
-  IAxiosError,
-  IAxiosGetAuthData,
-  IAxiosMiddleware,
-  IAxiosOptions,
-  IAxiosOptionsAuth,
-  IAxiosRequest,
-  IAxiosRequestConfig,
-  IAxiosRequestOptions,
-  IAxiosResponse,
+  AxiosError,
+  AxiosMiddleware,
+  AxiosRequest,
+  AxiosResponse,
+  AxiosOptions,
+  RequestConfig,
+  RequestOptions,
+  Unknown,
 } from "../typing";
 
 export class Axios {
-  private readonly auth: IAxiosOptionsAuth | null;
   private readonly baseUrl: string | null;
   private readonly logger: Logger;
-  private readonly middleware: Array<IAxiosMiddleware>;
+  private readonly middleware: Array<AxiosMiddleware>;
   private readonly name: string | null;
 
-  public constructor(options: IAxiosOptions) {
-    this.auth = options.auth || null;
+  public constructor(options: AxiosOptions) {
     this.baseUrl = options.baseUrl || null;
     this.logger = options.logger.createChildLogger("Axios");
     this.middleware = options.middleware || [];
     this.name = options.name || null;
   }
 
-  public async get(path: string, options?: IAxiosRequestOptions): Promise<IAxiosResponse> {
-    return this.request({ method: "get", url: this.getUrl(path) }, options || {});
+  public async get<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
+    return this.request<Data>({ method: "get", url: this.getUrl(path) }, options || {});
   }
 
-  public async post(path: string, options?: IAxiosRequestOptions): Promise<IAxiosResponse> {
-    return this.request(
+  public async post<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
+    return this.request<Data>(
       { method: "post", url: this.getUrl(path) },
       {
         ...(options || {}),
@@ -45,8 +41,8 @@ export class Axios {
     );
   }
 
-  public async put(path: string, options?: IAxiosRequestOptions): Promise<IAxiosResponse> {
-    return this.request(
+  public async put<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
+    return this.request<Data>(
       { method: "put", url: this.getUrl(path) },
       {
         ...(options || {}),
@@ -54,8 +50,8 @@ export class Axios {
     );
   }
 
-  public async patch(path: string, options?: IAxiosRequestOptions): Promise<IAxiosResponse> {
-    return this.request(
+  public async patch<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
+    return this.request<Data>(
       { method: "patch", url: this.getUrl(path) },
       {
         ...(options || {}),
@@ -63,21 +59,8 @@ export class Axios {
     );
   }
 
-  public async delete(path: string, options?: IAxiosRequestOptions): Promise<IAxiosResponse> {
-    return this.request({ method: "delete", url: this.getUrl(path) }, options || {});
-  }
-
-  private getAuth(options: IAxiosRequestOptions): IAxiosGetAuthData {
-    switch (options.auth) {
-      case AuthType.BASIC:
-        return { auth: this.auth?.basic, headers: {} };
-
-      case AuthType.BEARER:
-        return { headers: { Authorization: `Bearer ${this.auth?.bearer}` } };
-
-      default:
-        return { headers: {} };
-    }
+  public async delete<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
+    return this.request<Data>({ method: "delete", url: this.getUrl(path) }, options || {});
   }
 
   private getUrl(path: string): string {
@@ -87,7 +70,18 @@ export class Axios {
     return new URL(path, this.baseUrl).toString();
   }
 
-  private async requestMiddleware(request: IAxiosRequest, options: IAxiosRequestOptions): Promise<IAxiosRequest> {
+  private async configMiddleware(config: RequestConfig, options: RequestOptions): Promise<RequestConfig> {
+    const middleware = [...this.middleware, ...(options.middleware || [])];
+
+    for (const mw of middleware) {
+      if (!mw.config) continue;
+      config = await mw.config(config);
+    }
+
+    return config;
+  }
+
+  private async requestMiddleware(request: AxiosRequest, options: RequestOptions): Promise<AxiosRequest> {
     const middleware = [...this.middleware, ...(options.middleware || []), axiosCaseSwitchMiddleware];
 
     for (const mw of middleware) {
@@ -98,18 +92,21 @@ export class Axios {
     return request;
   }
 
-  private async responseMiddlware(response: IAxiosResponse, options: IAxiosRequestOptions): Promise<IAxiosResponse> {
+  private async responseMiddleware<Data>(
+    response: AxiosResponse<Data>,
+    options: RequestOptions,
+  ): Promise<AxiosResponse<Data>> {
     const middleware = [axiosCaseSwitchMiddleware, ...this.middleware, ...(options.middleware || [])];
 
     for (const mw of middleware) {
       if (!mw.response) continue;
-      response = await mw.response(response);
+      response = (await mw.response(response)) as AxiosResponse<Data>;
     }
 
     return response;
   }
 
-  private async errorMiddlware(error: IAxiosError, options: IAxiosRequestOptions): Promise<IAxiosError> {
+  private async errorMiddleware(error: AxiosError, options: RequestOptions): Promise<AxiosError> {
     const middleware = [...this.middleware, ...(options.middleware || [])];
 
     for (const mw of middleware) {
@@ -120,9 +117,10 @@ export class Axios {
     return error;
   }
 
-  private async request(config: IAxiosRequestConfig, options: IAxiosRequestOptions): Promise<IAxiosResponse> {
+  private async request<Data>(config: RequestConfig, options: RequestOptions): Promise<AxiosResponse<Data>> {
     const start = Date.now();
 
+    const conf = await this.configMiddleware(config, options);
     const request = await this.requestMiddleware(
       {
         data: options.data,
@@ -131,17 +129,14 @@ export class Axios {
       },
       options,
     );
-    const auth = this.getAuth(options);
 
-    let response: AxiosResponse;
+    let response: Response;
 
     try {
       response = await axios.request({
-        ...config,
-        ...(auth.auth ? { auth: auth.auth } : {}),
+        ...conf,
         ...request,
         headers: {
-          ...auth.headers,
           ...request.headers,
         },
       });
@@ -160,9 +155,9 @@ export class Axios {
         error: err,
       });
 
-      throw await this.errorMiddlware(convertError(err), options);
+      throw await this.errorMiddleware(convertError(err), options);
     }
 
-    return await this.responseMiddlware(convertResponse(response), options);
+    return await this.responseMiddleware<Data>(convertResponse<Data>(response), options);
   }
 }

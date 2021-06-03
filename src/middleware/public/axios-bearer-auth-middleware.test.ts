@@ -7,13 +7,24 @@ describe("axiosBearerAuthMiddleware", () => {
     middleware = axiosBearerAuthMiddleware("jwt.jwt.jwt");
   });
 
-  test("should convert all data keys to snake_case", () => {
-    expect(
+  test("should add bearer auth to request headers", async () => {
+    await expect(
       middleware.request({
         data: { data: true },
         headers: { headers: true },
         params: { params: true },
       }),
-    ).resolves.toMatchSnapshot();
+    ).resolves.toStrictEqual({
+      data: {
+        data: true,
+      },
+      headers: {
+        Authorization: "Bearer jwt.jwt.jwt",
+        headers: true,
+      },
+      params: {
+        params: true,
+      },
+    });
   });
 });

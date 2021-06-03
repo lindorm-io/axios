@@ -7,8 +7,8 @@ describe("axiosCaseSwitchMiddleware", () => {
     middleware = axiosCaseSwitchMiddleware;
   });
 
-  test("should convert all data keys to snake_case", () => {
-    expect(
+  test("should convert all data keys to snake_case", async () => {
+    await expect(
       middleware.request({
         data: {
           camelCase1: 1,
@@ -18,11 +18,25 @@ describe("axiosCaseSwitchMiddleware", () => {
         headers: { headers: true },
         params: { params: true },
       }),
-    ).resolves.toMatchSnapshot();
+    ).resolves.toStrictEqual({
+      data: {
+        camel_case_1: 1,
+        camel_case_2: 2,
+        camel_case_3: {
+          camel_case_4: 4,
+        },
+      },
+      headers: {
+        headers: true,
+      },
+      params: {
+        params: true,
+      },
+    });
   });
 
-  test("should convert all data keys to camelCase", () => {
-    expect(
+  test("should convert all data keys to camelCase", async () => {
+    await expect(
       middleware.response({
         data: {
           snake_case_1: 1,
@@ -33,6 +47,17 @@ describe("axiosCaseSwitchMiddleware", () => {
         status: 200,
         statusText: "OK",
       }),
-    ).resolves.toMatchSnapshot();
+    ).resolves.toStrictEqual({
+      data: {
+        snakeCase1: 1,
+        snakeCase2: 2,
+        snakeCase3: {
+          snakeCase4: 4,
+        },
+      },
+      headers: {},
+      status: 200,
+      statusText: "OK",
+    });
   });
 });

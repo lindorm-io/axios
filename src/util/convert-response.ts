@@ -1,7 +1,7 @@
-import { AxiosResponse } from "axios";
-import { IAxiosResponse } from "../typing";
+import { AxiosResponse as Response } from "axios";
+import { AxiosResponse } from "../typing";
 
-export const convertResponse = (response: AxiosResponse): IAxiosResponse => ({
+export const convertResponse = <ResponseData>(response: Response): AxiosResponse<ResponseData> => ({
   data: response?.data || {},
   headers: response?.headers || {},
   status: response?.status,

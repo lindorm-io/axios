@@ -1,6 +1,6 @@
-import { IGetResponseTimeData } from "../typing";
+import { AnyObject, ResponseTime } from "../typing";
 
-const getHeaderTime = (headers: Record<string, any>): number | undefined => {
+const getHeaderTime = (headers: AnyObject): number | undefined => {
   try {
     const header = headers["x-response-time"];
     return parseInt(header.replace("ms", ""), 10);
@@ -9,7 +9,7 @@ const getHeaderTime = (headers: Record<string, any>): number | undefined => {
   }
 };
 
-export const getResponseTime = (headers: Record<string, any>, start: number): IGetResponseTimeData => {
+export const getResponseTime = (headers: AnyObject, start: number): ResponseTime => {
   const axios = Date.now() - start;
   const server = getHeaderTime(headers);
   const diff = server ? axios - server : undefined;

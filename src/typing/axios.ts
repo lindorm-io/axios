@@ -1,23 +1,17 @@
-import { AuthType } from "../enum";
-import { AxiosBasicCredentials, Method } from "axios";
-import { IAxiosMiddleware } from "./middleware";
+import { AnyObject, Unknown } from "./util";
+import { AxiosBasicCredentials as BasicCredentials, Method } from "axios";
+import { AxiosMiddleware } from "./middleware";
 import { Logger } from "@lindorm-io/winston";
 
-export interface IAxiosOptionsAuth {
-  basic?: AxiosBasicCredentials;
-  bearer?: string;
-}
-
-export interface IAxiosOptions {
-  auth?: IAxiosOptionsAuth;
+export interface AxiosOptions {
   baseUrl?: string;
   logger: Logger;
-  middleware?: Array<IAxiosMiddleware>;
+  middleware?: Array<AxiosMiddleware>;
   name?: string;
 }
 
-export interface IAxiosConfig {
-  auth?: AxiosBasicCredentials;
+export interface AxiosConfig {
+  auth?: BasicCredentials;
   host: string;
   method: Method;
   path: string;
@@ -26,44 +20,37 @@ export interface IAxiosConfig {
   url?: string;
 }
 
-export interface IAxiosError {
-  config?: IAxiosConfig;
-  debug?: Record<string, any>;
+export interface AxiosError {
+  config?: AxiosConfig;
+  debug?: AnyObject;
   details?: string;
   errorCode?: string;
-  publicData?: Record<string, any>;
-  request?: IAxiosRequest;
-  response?: IAxiosResponse;
+  publicData?: AnyObject;
+  request?: AxiosRequest;
+  response?: AxiosResponse<Unknown>;
   statusCode?: number;
   title?: string;
 }
 
-export interface IAxiosRequest {
-  data?: Record<string, unknown>;
-  headers?: Record<string, unknown>;
-  params?: Record<string, unknown>;
+export interface AxiosRequest {
+  data?: AnyObject;
+  headers?: AnyObject;
+  params?: AnyObject;
 }
 
-export interface IAxiosResponse {
-  data?: Record<string, unknown>;
-  headers: Record<string, unknown>;
+export interface AxiosResponse<ResponseData> {
+  data: ResponseData;
+  headers: AnyObject;
   status?: number;
   statusText?: string;
 }
 
-export interface IAxiosRequestConfig {
+export interface RequestConfig {
+  auth?: BasicCredentials;
   method: Method;
   url: string;
 }
 
-export interface IAxiosRequestOptions extends IAxiosRequest {
-  auth?: AuthType;
-  middleware?: Array<IAxiosMiddleware>;
-}
-
-export interface IAxiosGetAuthData {
-  auth?: AxiosBasicCredentials;
-  headers?: {
-    Authorization?: string;
-  };
+export interface RequestOptions extends AxiosRequest {
+  middleware?: Array<AxiosMiddleware>;
 }

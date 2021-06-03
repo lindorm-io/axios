@@ -1,19 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Axios should DELETE 1`] = `
-Object {
-  "data": Object {},
-  "headers": Object {},
-  "status": undefined,
-  "statusText": undefined,
-}
-`;
-
-exports[`Axios should DELETE 2`] = `
 Array [
   Array [
     Object {
-      "data": Object {},
+      "data": undefined,
       "headers": Object {},
       "method": "delete",
       "params": undefined,
@@ -24,19 +15,10 @@ Array [
 `;
 
 exports[`Axios should GET 1`] = `
-Object {
-  "data": Object {},
-  "headers": Object {},
-  "status": undefined,
-  "statusText": undefined,
-}
-`;
-
-exports[`Axios should GET 2`] = `
 Array [
   Array [
     Object {
-      "data": Object {},
+      "data": undefined,
       "headers": Object {},
       "method": "get",
       "params": Object {
@@ -49,15 +31,6 @@ Array [
 `;
 
 exports[`Axios should PATCH 1`] = `
-Object {
-  "data": Object {},
-  "headers": Object {},
-  "status": undefined,
-  "statusText": undefined,
-}
-`;
-
-exports[`Axios should PATCH 2`] = `
 Array [
   Array [
     Object {
@@ -74,15 +47,6 @@ Array [
 `;
 
 exports[`Axios should POST 1`] = `
-Object {
-  "data": Object {},
-  "headers": Object {},
-  "status": undefined,
-  "statusText": undefined,
-}
-`;
-
-exports[`Axios should POST 2`] = `
 Array [
   Array [
     Object {
@@ -99,15 +63,6 @@ Array [
 `;
 
 exports[`Axios should PUT 1`] = `
-Object {
-  "data": Object {},
-  "headers": Object {},
-  "status": undefined,
-  "statusText": undefined,
-}
-`;
-
-exports[`Axios should PUT 2`] = `
 Array [
   Array [
     Object {
@@ -124,19 +79,10 @@ Array [
 `;
 
 exports[`Axios should not use base url 1`] = `
-Object {
-  "data": Object {},
-  "headers": Object {},
-  "status": undefined,
-  "statusText": undefined,
-}
-`;
-
-exports[`Axios should not use base url 2`] = `
 Array [
   Array [
     Object {
-      "data": Object {},
+      "data": undefined,
       "headers": Object {},
       "method": "get",
       "params": undefined,
@@ -147,100 +93,14 @@ Array [
 `;
 
 exports[`Axios should not use base url when specified 1`] = `
-Object {
-  "data": Object {},
-  "headers": Object {},
-  "status": undefined,
-  "statusText": undefined,
-}
-`;
-
-exports[`Axios should not use base url when specified 2`] = `
 Array [
   Array [
     Object {
-      "data": Object {},
+      "data": undefined,
       "headers": Object {},
       "method": "get",
       "params": undefined,
       "url": "http://without-base-url/path",
-    },
-  ],
-]
-`;
-
-exports[`Axios should overwrite bearer auth if specified in headers or middleware 1`] = `
-Object {
-  "data": Object {},
-  "headers": Object {},
-  "status": undefined,
-  "statusText": undefined,
-}
-`;
-
-exports[`Axios should overwrite bearer auth if specified in headers or middleware 2`] = `
-Array [
-  Array [
-    Object {
-      "data": Object {},
-      "headers": Object {
-        "Authorization": "custom",
-      },
-      "method": "get",
-      "params": undefined,
-      "url": "http://localhost/get/path",
-    },
-  ],
-]
-`;
-
-exports[`Axios should use basic auth 1`] = `
-Object {
-  "data": Object {},
-  "headers": Object {},
-  "status": undefined,
-  "statusText": undefined,
-}
-`;
-
-exports[`Axios should use basic auth 2`] = `
-Array [
-  Array [
-    Object {
-      "auth": Object {
-        "password": "password",
-        "username": "username",
-      },
-      "data": Object {},
-      "headers": Object {},
-      "method": "get",
-      "params": undefined,
-      "url": "http://localhost/get/path",
-    },
-  ],
-]
-`;
-
-exports[`Axios should use bearer auth 1`] = `
-Object {
-  "data": Object {},
-  "headers": Object {},
-  "status": undefined,
-  "statusText": undefined,
-}
-`;
-
-exports[`Axios should use bearer auth 2`] = `
-Array [
-  Array [
-    Object {
-      "data": Object {},
-      "headers": Object {
-        "Authorization": "Bearer bearerAuth",
-      },
-      "method": "get",
-      "params": undefined,
-      "url": "http://localhost/get/path",
     },
   ],
 ]
