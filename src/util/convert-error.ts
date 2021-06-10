@@ -6,6 +6,7 @@ export const convertError = (error: AxiosError): AxiosRequestError => {
   const message = error.message || "Axios Request Handler encountered an error";
 
   return new AxiosRequestError(message, {
+    code: lindormKoaError.code,
     config: {
       auth: error?.config?.auth,
       host: error?.request?.host,
@@ -15,13 +16,12 @@ export const convertError = (error: AxiosError): AxiosRequestError => {
       timeout: error?.config?.timeout,
       url: error?.config?.url,
     },
+    data: lindormKoaError.data,
     debug: {
       message: lindormKoaError.message,
       name: lindormKoaError.name,
+      notes: lindormKoaError.details || error?.response?.statusText,
     },
-    details: lindormKoaError.details || error?.response?.statusText,
-    errorCode: lindormKoaError.code,
-    publicData: lindormKoaError.data,
     request: {
       data: error?.config?.data,
       headers: error?.config?.headers,
@@ -33,7 +33,7 @@ export const convertError = (error: AxiosError): AxiosRequestError => {
       status: error?.response?.status,
       statusText: error?.response?.statusText,
     },
-    statusCode: error?.response?.status,
+    statusCode: error?.response?.status || 503,
     title: lindormKoaError.title,
   });
 };

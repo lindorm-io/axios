@@ -1,4 +1,4 @@
-import { AnyObject, Unknown } from "./util";
+import { AnyObject } from "./util";
 import { AxiosBasicCredentials as BasicCredentials, Method } from "axios";
 import { AxiosMiddleware } from "./middleware";
 import { Logger } from "@lindorm-io/winston";
@@ -19,18 +19,6 @@ export interface AxiosConfig {
   protocol: string;
   timeout?: number;
   url?: string;
-}
-
-export interface AxiosError {
-  config?: AxiosConfig;
-  debug?: AnyObject;
-  details?: string;
-  errorCode?: string;
-  publicData?: AnyObject;
-  request?: AxiosRequest;
-  response?: AxiosResponse<Unknown>;
-  statusCode?: number;
-  title?: string;
 }
 
 export interface AxiosRequest {

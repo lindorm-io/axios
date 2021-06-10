@@ -1,20 +1,32 @@
-import { ExtendableError } from "@lindorm-io/errors";
-import { AxiosConfig, AxiosError, AxiosRequest, AxiosResponse, Unknown } from "../typing";
+import { ExtendableError, ExtendableErrorOptions, IExtendableError } from "@lindorm-io/errors";
+import { AxiosConfig, AxiosRequest, AxiosResponse, Unknown } from "../typing";
 
-export class AxiosRequestError extends ExtendableError implements AxiosError {
-  public readonly config: AxiosConfig | undefined;
-  public readonly request: AxiosRequest | undefined;
-  public readonly response: AxiosResponse<Unknown> | undefined;
-  public readonly statusCode: number | undefined;
-  public readonly title: string | undefined;
+export interface IAxiosRequestError extends IExtendableError {
+  readonly config: AxiosConfig;
+  readonly request: AxiosRequest;
+  readonly response: AxiosResponse<Unknown>;
+  readonly statusCode: number;
+}
 
-  public constructor(message: string, options?: AxiosError) {
+export interface AxiosRequestErrorOptions extends ExtendableErrorOptions {
+  config: AxiosConfig;
+  request: AxiosRequest;
+  response: AxiosResponse<Unknown>;
+  statusCode: number;
+}
+
+export class AxiosRequestError extends ExtendableError {
+  public readonly config: AxiosConfig;
+  public readonly request: AxiosRequest;
+  public readonly response: AxiosResponse<Unknown>;
+  public readonly statusCode: number;
+
+  public constructor(message: string, options: AxiosRequestErrorOptions) {
     super(message, options);
 
-    this.config = options?.config;
-    this.request = options?.request;
-    this.response = options?.response;
-    this.statusCode = options?.statusCode;
-    this.title = options?.title;
+    this.config = options.config;
+    this.request = options.request;
+    this.response = options.response;
+    this.statusCode = options.statusCode;
   }
 }

@@ -34,15 +34,5 @@ describe("convertError", () => {
     } as any);
 
     expect(converted).toMatchSnapshot();
-
-    expect(converted.config).toMatchSnapshot();
-    expect(converted.debug).toMatchSnapshot();
-    expect(converted.details).toMatchSnapshot();
-    expect(converted.errorCode).toMatchSnapshot();
-    expect(converted.publicData).toMatchSnapshot();
-    expect(converted.request).toMatchSnapshot();
-    expect(converted.response).toMatchSnapshot();
-    expect(converted.statusCode).toMatchSnapshot();
-    expect(converted.title).toMatchSnapshot();
   });
 });

@@ -1,11 +1,12 @@
 import axios, { AxiosResponse as Response } from "axios";
+import { AuthType } from "../enum";
+import { IAxiosRequestError } from "../error";
 import { Logger } from "@lindorm-io/winston";
 import { axiosCaseSwitchMiddleware } from "../middleware/default";
 import { convertError, convertResponse, logAxiosError, logAxiosResponse } from "../util";
 import { getResponseTime } from "../util/get-response-time";
 import { startsWith } from "lodash";
 import {
-  AxiosError,
   AxiosMiddleware,
   AxiosOptions,
   AxiosRequest,
@@ -14,7 +15,6 @@ import {
   RequestOptions,
   Unknown,
 } from "../typing";
-import { AuthType } from "../enum";
 
 export class Axios {
   private readonly baseUrl: string | null;
@@ -107,7 +107,7 @@ export class Axios {
     return response;
   }
 
-  private async errorMiddleware(error: AxiosError, options: RequestOptions): Promise<AxiosError> {
+  private async errorMiddleware(error: IAxiosRequestError, options: RequestOptions): Promise<IAxiosRequestError> {
     const middleware = [...this.middleware, ...(options.middleware || [])];
 
     for (const mw of middleware) {
