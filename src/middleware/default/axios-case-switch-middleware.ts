@@ -1,13 +1,13 @@
-import { AxiosMiddleware, AxiosRequest, AxiosResponse } from "../../typing";
-import { camelKeys, snakeKeys } from "@lindorm-io/core";
+import { AnyObject, AxiosMiddleware, AxiosRequest, AxiosResponse } from "../../typing";
+import { camelKeys, snakeKeys, isObjectStrict } from "@lindorm-io/core";
 
 export const axiosCaseSwitchMiddleware: AxiosMiddleware = {
   request: async (request): Promise<AxiosRequest> => ({
     ...request,
-    data: request.data ? snakeKeys(request.data) : undefined,
+    data: isObjectStrict(request.data) ? snakeKeys<any, AnyObject>(request.data) : undefined,
   }),
   response: async (response): Promise<AxiosResponse<any>> => ({
     ...response,
-    data: response.data ? camelKeys(response.data) : {},
+    data: isObjectStrict(response.data) ? camelKeys<any, AnyObject>(response.data) : {},
   }),
 };
