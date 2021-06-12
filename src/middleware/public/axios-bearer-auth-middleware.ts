@@ -1,7 +1,7 @@
-import { AxiosMiddleware } from "../../typing";
+import { AxiosMiddleware, AxiosRequest } from "../../typing";
 
 export const axiosBearerAuthMiddleware = (bearerToken: string): AxiosMiddleware => ({
-  request: async (request) => ({
+  request: async (request): Promise<AxiosRequest> => ({
     ...request,
     headers: {
       ...(request.headers || {}),
