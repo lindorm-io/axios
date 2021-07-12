@@ -25,6 +25,7 @@ export interface AxiosRequest {
   data?: AnyObject;
   headers?: AnyObject;
   params?: AnyObject;
+  query?: AnyObject;
 }
 
 export interface AxiosResponse<ResponseData> {
@@ -37,7 +38,8 @@ export interface AxiosResponse<ResponseData> {
 export interface RequestConfig {
   auth?: BasicCredentials;
   method: Method;
-  url: string;
+  path: string;
+  url?: string;
 }
 
 export interface RequestOptions extends AxiosRequest {

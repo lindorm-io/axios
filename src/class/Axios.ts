@@ -30,12 +30,12 @@ export class Axios {
   }
 
   public async get<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
-    return this.request<Data>({ method: "get", url: this.getUrl(path) }, options || {});
+    return this.request<Data>({ method: "get", path }, options || {});
   }
 
   public async post<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
     return this.request<Data>(
-      { method: "post", url: this.getUrl(path) },
+      { method: "post", path },
       {
         ...(options || {}),
       },
@@ -44,7 +44,7 @@ export class Axios {
 
   public async put<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
     return this.request<Data>(
-      { method: "put", url: this.getUrl(path) },
+      { method: "put", path },
       {
         ...(options || {}),
       },
@@ -53,7 +53,7 @@ export class Axios {
 
   public async patch<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
     return this.request<Data>(
-      { method: "patch", url: this.getUrl(path) },
+      { method: "patch", path },
       {
         ...(options || {}),
       },
@@ -61,14 +61,41 @@ export class Axios {
   }
 
   public async delete<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
-    return this.request<Data>({ method: "delete", url: this.getUrl(path) }, options || {});
+    return this.request<Data>({ method: "delete", path }, options || {});
   }
 
-  private getUrl(path: string): string {
+  private getUrl(path: string, options: RequestOptions): string {
     if (!this.baseUrl) return path;
     if (startsWith(path, "http")) return path;
 
-    return new URL(path, this.baseUrl).toString();
+    return new URL(this.enhancePath(path, options), this.baseUrl).toString();
+  }
+
+  private enhancePath(path: string, options: RequestOptions): string {
+    if (!options.params) return path;
+
+    const array: Array<string> = [];
+
+    for (const item of path.split("/")) {
+      if (!startsWith(item, ":")) {
+        array.push(item);
+      } else {
+        const param = options.params[item.replace(":", "")];
+
+        if (param) {
+          array.push(param);
+        } else {
+          this.logger.error("invalid path/params combination", {
+            path,
+            params: options.params,
+          });
+
+          array.push(item);
+        }
+      }
+    }
+
+    return array.join("/");
   }
 
   private async configMiddleware(config: RequestConfig, options: RequestOptions): Promise<RequestConfig> {
@@ -121,28 +148,32 @@ export class Axios {
   private async request<Data>(config: RequestConfig, options: RequestOptions): Promise<AxiosResponse<Data>> {
     const start = Date.now();
 
-    const { auth, ...conf } = await this.configMiddleware(config, options);
-    const request = await this.requestMiddleware(
+    const { auth, method, path } = await this.configMiddleware(config, options);
+    const { data, headers, query } = await this.requestMiddleware(
       {
         data: options.data,
         headers: options.headers || {},
         params: options.params,
+        query: options.query,
       },
       options,
     );
-    const { Authorization, ...headers } = request.headers || {};
+    const url = this.getUrl(path, options);
+    const { Authorization, ...restHeaders } = headers || {};
 
     let response: Response;
 
     try {
       response = await axios.request({
         ...(options.auth === AuthType.BASIC ? { auth } : {}),
-        ...conf,
-        ...request,
+        method,
+        ...(data ? { data } : {}),
         headers: {
           ...(options.auth === AuthType.BEARER ? { Authorization } : {}),
-          ...(headers ? headers : {}),
+          ...(restHeaders ? restHeaders : {}),
         },
+        ...(query ? { params: query } : {}),
+        url,
       });
 
       logAxiosResponse({

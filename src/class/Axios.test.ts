@@ -82,7 +82,19 @@ describe("Axios", () => {
   });
 
   test("should use params as specified", async () => {
-    await expect(handler.get("/get/path", { params: { param1: "value" } })).resolves.toStrictEqual(mocked);
+    await expect(handler.get("/get/path/:param1", { params: { param1: "paramValue" } })).resolves.toStrictEqual(mocked);
+    expect(request.mock.calls).toMatchSnapshot();
+  });
+
+  test("should use query as specified", async () => {
+    await expect(
+      handler.get("/get/path/query", {
+        query: {
+          query1: "queryValue",
+          query2: 12345,
+        },
+      }),
+    ).resolves.toStrictEqual(mocked);
     expect(request.mock.calls).toMatchSnapshot();
   });
 
