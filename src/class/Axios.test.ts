@@ -92,6 +92,8 @@ describe("Axios", () => {
         query: {
           query1: "queryValue",
           query2: 12345,
+          query3: "query with spaces",
+          query4: "https://test.lindorm.io/route/",
         },
       }),
     ).resolves.toStrictEqual(mocked);

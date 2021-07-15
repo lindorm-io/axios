@@ -2,7 +2,7 @@ import axios, { AxiosResponse as Response } from "axios";
 import { AuthType } from "../enum";
 import { IAxiosRequestError } from "../error";
 import { Logger } from "@lindorm-io/winston";
-import { axiosCaseSwitchMiddleware } from "../middleware/default";
+import { axiosCaseSwitchMiddleware, axiosEncodeQueryMiddleware } from "../middleware/default";
 import { convertError, convertResponse, logAxiosError, logAxiosResponse } from "../util";
 import { getResponseTime } from "../util/get-response-time";
 import { startsWith } from "lodash";
@@ -110,7 +110,12 @@ export class Axios {
   }
 
   private async requestMiddleware(request: AxiosRequest, options: RequestOptions): Promise<AxiosRequest> {
-    const middleware = [...this.middleware, ...(options.middleware || []), axiosCaseSwitchMiddleware];
+    const middleware = [
+      ...this.middleware,
+      ...(options.middleware || []),
+      axiosCaseSwitchMiddleware,
+      axiosEncodeQueryMiddleware,
+    ];
 
     for (const mw of middleware) {
       if (!mw.request) continue;

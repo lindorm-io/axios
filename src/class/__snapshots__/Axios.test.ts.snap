@@ -163,7 +163,9 @@ Array [
       "method": "get",
       "params": Object {
         "query1": "queryValue",
-        "query2": 12345,
+        "query2": "12345",
+        "query3": "query%20with%20spaces",
+        "query4": "https%3A%2F%2Ftest.lindorm.io%2Froute%2F",
       },
       "url": "http://localhost/get/path/query",
     },
