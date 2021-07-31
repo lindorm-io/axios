@@ -2,7 +2,7 @@ import axios, { AxiosResponse as Response } from "axios";
 import { AuthType } from "../enum";
 import { IAxiosRequestError } from "../error";
 import { Logger } from "@lindorm-io/winston";
-import { axiosCaseSwitchMiddleware, axiosEncodeQueryMiddleware } from "../middleware/default";
+import { axiosCaseSwitchMiddleware, axiosEncodeQueryMiddleware, axiosRetryMiddleware } from "../middleware/default";
 import { convertError, convertResponse, logAxiosError, logAxiosResponse } from "../util";
 import { getResponseTime } from "../util/get-response-time";
 import { startsWith } from "lodash";
@@ -30,14 +30,14 @@ export class Axios {
   }
 
   public async get<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
-    return this.request<Data>({ method: "get", path }, options || {});
+    return this.request<Data>({ method: "get", path }, options || { retry: 1 });
   }
 
   public async post<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
     return this.request<Data>(
       { method: "post", path },
       {
-        ...(options || {}),
+        ...(options || { retry: 1 }),
       },
     );
   }
@@ -46,7 +46,7 @@ export class Axios {
     return this.request<Data>(
       { method: "put", path },
       {
-        ...(options || {}),
+        ...(options || { retry: 1 }),
       },
     );
   }
@@ -55,13 +55,13 @@ export class Axios {
     return this.request<Data>(
       { method: "patch", path },
       {
-        ...(options || {}),
+        ...(options || { retry: 1 }),
       },
     );
   }
 
   public async delete<Data = Unknown>(path: string, options?: RequestOptions): Promise<AxiosResponse<Data>> {
-    return this.request<Data>({ method: "delete", path }, options || {});
+    return this.request<Data>({ method: "delete", path }, options || { retry: 1 });
   }
 
   private getUrl(path: string, options: RequestOptions): string {
@@ -109,6 +109,17 @@ export class Axios {
     return config;
   }
 
+  private async errorMiddleware(error: IAxiosRequestError, options: RequestOptions): Promise<IAxiosRequestError> {
+    const middleware = [...this.middleware, ...(options.middleware || [])];
+
+    for (const mw of middleware) {
+      if (!mw.error) continue;
+      error = await mw.error(error);
+    }
+
+    return error;
+  }
+
   private async requestMiddleware(request: AxiosRequest, options: RequestOptions): Promise<AxiosRequest> {
     const middleware = [
       ...this.middleware,
@@ -139,19 +150,22 @@ export class Axios {
     return response;
   }
 
-  private async errorMiddleware(error: IAxiosRequestError, options: RequestOptions): Promise<IAxiosRequestError> {
-    const middleware = [...this.middleware, ...(options.middleware || [])];
+  private async retryMiddleware(error: IAxiosRequestError, options: RequestOptions): Promise<boolean> {
+    const middleware = [axiosRetryMiddleware, ...this.middleware, ...(options.middleware || [])];
+    let result = false;
 
     for (const mw of middleware) {
-      if (!mw.error) continue;
-      error = await mw.error(error);
+      if (!mw.retry) continue;
+      result = await mw.retry(error, options);
     }
 
-    return error;
+    return result;
   }
 
   private async request<Data>(config: RequestConfig, options: RequestOptions): Promise<AxiosResponse<Data>> {
     const start = Date.now();
+
+    options.retry = options.retry || 0;
 
     const { auth, method, path } = await this.configMiddleware(config, options);
     const { data, headers, query } = await this.requestMiddleware(
@@ -194,6 +208,10 @@ export class Axios {
         time: getResponseTime(err?.response?.headers, start),
         error: err,
       });
+
+      if (await this.retryMiddleware(err, options)) {
+        return this.request(config, { ...options, retry: options.retry - 1 });
+      }
 
       throw await this.errorMiddleware(convertError(err), options);
     }

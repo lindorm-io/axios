@@ -45,4 +45,5 @@ export interface RequestConfig {
 export interface RequestOptions extends AxiosRequest {
   auth?: AuthType;
   middleware?: Array<AxiosMiddleware>;
+  retry?: number;
 }

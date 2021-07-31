@@ -84,6 +84,58 @@ Array [
 ]
 `;
 
+exports[`Axios should retry once with default options 1`] = `
+Array [
+  Array [
+    Object {
+      "headers": Object {},
+      "method": "get",
+      "url": "http://localhost/get/path",
+    },
+  ],
+  Array [
+    Object {
+      "headers": Object {},
+      "method": "get",
+      "url": "http://localhost/get/path",
+    },
+  ],
+]
+`;
+
+exports[`Axios should retry with set options 1`] = `
+Array [
+  Array [
+    Object {
+      "headers": Object {},
+      "method": "get",
+      "url": "http://localhost/get/path",
+    },
+  ],
+  Array [
+    Object {
+      "headers": Object {},
+      "method": "get",
+      "url": "http://localhost/get/path",
+    },
+  ],
+  Array [
+    Object {
+      "headers": Object {},
+      "method": "get",
+      "url": "http://localhost/get/path",
+    },
+  ],
+  Array [
+    Object {
+      "headers": Object {},
+      "method": "get",
+      "url": "http://localhost/get/path",
+    },
+  ],
+]
+`;
+
 exports[`Axios should use basic auth when specified 1`] = `
 Array [
   Array [
